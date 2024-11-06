@@ -1,0 +1,24 @@
+#include <stdio.h>
+int main() {
+    int n;
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+    int burst_time[n], completion_time[n], waiting_time[n], turnaround_time[n];
+    for (int i = 0; i < n; i++) {
+        printf("Enter burst time for Process %d: ", i + 1);
+        scanf("%d", &burst_time[i]);
+    }
+    int current_time = 0;
+    for (int i = 0; i < n; i++) {
+        completion_time[i] = current_time + burst_time[i];
+        turnaround_time[i] = completion_time[i];
+        waiting_time[i] = turnaround_time[i] - burst_time[i];
+        current_time = completion_time[i];
+    }
+    printf("Process | Burst Time | Completion Time | Waiting Time | Turnaround Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("   %d    |     %d      |       %d       |      %d       |       %d\n",
+               i + 1, burst_time[i], completion_time[i], waiting_time[i], turnaround_time[i]);
+    }
+    return 0;
+}
