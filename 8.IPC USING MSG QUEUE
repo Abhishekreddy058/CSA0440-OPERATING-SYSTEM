@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <unistd.h>
+
+#define MAX 100
+
+struct message {
+    long msg_type;
+    char msg_text[MAX];
+};
+
+int main() {
+    key_t key = ftok("progfile", 65);
+    int msg_id = msgget(key, 0666 | IPC_CREAT);
+    struct message msg;
+
+    if (fork() == 0) {
+        msg.msg_type = 1;
+        strcpy(msg.msg_text, "Hello from child process!");
+        msgsnd(msg_id, &msg, sizeof(msg), 0);
+        printf("Child: Message sent\n");
+    } else {
+        msgrcv(msg_id, &msg, sizeof(msg), 1, 0);
+        printf("Parent: Message received: %s\n", msg.msg_text);
+        msgctl(msg_id, IPC_RMID, NULL);
+    }
+
+    return 0;
+}
